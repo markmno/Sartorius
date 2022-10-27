@@ -1,0 +1,37 @@
+_BASE_: "../Base-RCNN-FPN.yaml"
+MODEL:
+  WEIGHTS: "swin_tiny_patch4_window7_224_d2.pth"
+  PIXEL_MEAN: [123.675, 116.28, 103.53]
+  PIXEL_STD: [58.395, 57.12, 57.375]
+  MASK_ON: True
+  RESNETS:
+    DEPTH: 50
+  BACKBONE:
+    NAME: "build_swint_fpn_backbone"
+  SWINT:
+    OUT_FEATURES: ["stage2", "stage3", "stage4", "stage5"]
+  FPN:
+    IN_FEATURES: ["stage2", "stage3", "stage4", "stage5"]
+  ROI_HEADS:
+    NAME: "CascadeROIHeads"
+  ROI_BOX_HEAD:
+    NORM: "GN"
+    CLS_AGNOSTIC_BBOX_REG: True
+  ROI_MASK_HEAD:
+    NUM_CONV: 8
+    NORM: "GN"
+  RPN:
+    POST_NMS_TOPK_TRAIN: 2000
+SOLVER:
+  IMS_PER_BATCH: 128
+  STEPS: (35000, 45000)
+  MAX_ITER: 50000
+  BASE_LR: 0.16
+INPUT:
+  MIN_SIZE_TRAIN: (640, 864)
+  MIN_SIZE_TRAIN_SAMPLING: "range"
+  MAX_SIZE_TRAIN: 1440
+  CROP:
+    ENABLED: True
+TEST:
+  EVAL_PERIOD: 500
